@@ -1,0 +1,11 @@
+<h2>Products</h2>
+<ul>
+  @for (product of products; track $index) {
+  <li>
+    <a routerLink="1">{{ product.name }}</a>
+    <a routerLink="1">{{ product.id }}</a>
+    <a routerLink="1">{{ product.price }}</a>
+  </li>
+
+  }
+</ul>
