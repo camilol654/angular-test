@@ -1,6 +1,10 @@
 export interface Product {
   id: number;
   name: string;
+  description: string;
   price: number;
-  description?: string; // Optional property
+  stock: number;
+  category: string;
+  createdDate: Date;
+  updatedDate: Date;
 }

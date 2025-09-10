@@ -1,0 +1,119 @@
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="mb-0">
+            {{ isEditMode ? 'Editar Producto' : 'Crear Nuevo Producto' }}
+          </h3>
+        </div>
+        <div class="card-body">
+          <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+            <div class="row">
+              <!-- Nombre -->
+              <div class="col-md-6 mb-3">
+                <label for="name" class="form-label">Nombre *</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  [class.is-invalid]="isFieldInvalid('name')"
+                  id="name"
+                  formControlName="name"
+                  placeholder="Ingrese el nombre del producto"
+                />
+                <div class="invalid-feedback" *ngIf="getFieldError('name')">
+                  {{ getFieldError('name') }}
+                </div>
+              </div>
+
+              <!-- Categoría -->
+              <div class="col-md-6 mb-3">
+                <label for="category" class="form-label">Categoría *</label>
+                <select
+                  class="form-select"
+                  [class.is-invalid]="isFieldInvalid('category')"
+                  id="category"
+                  formControlName="category"
+                >
+                  <option value="">Seleccione una categoría</option>
+                  <option *ngFor="let category of categories" [value]="category">
+                    {{ category }}
+                  </option>
+                </select>
+                <div class="invalid-feedback" *ngIf="getFieldError('category')">
+                  {{ getFieldError('category') }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Descripción -->
+            <div class="mb-3">
+              <label for="description" class="form-label">Descripción *</label>
+              <textarea
+                class="form-control"
+                [class.is-invalid]="isFieldInvalid('description')"
+                id="description"
+                formControlName="description"
+                rows="3"
+                placeholder="Ingrese la descripción del producto"
+              ></textarea>
+              <div class="invalid-feedback" *ngIf="getFieldError('description')">
+                {{ getFieldError('description') }}
+              </div>
+            </div>
+
+            <div class="row">
+              <!-- Precio -->
+              <div class="col-md-6 mb-3">
+                <label for="price" class="form-label">Precio *</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    [class.is-invalid]="isFieldInvalid('price')"
+                    id="price"
+                    formControlName="price"
+                    step="0.01"
+                    min="0.01"
+                    placeholder="0.00"
+                  />
+                </div>
+                <div class="invalid-feedback" *ngIf="getFieldError('price')">
+                  {{ getFieldError('price') }}
+                </div>
+              </div>
+
+              <!-- Stock -->
+              <div class="col-md-6 mb-3">
+                <label for="stock" class="form-label">Stock *</label>
+                <input
+                  type="number"
+                  class="form-control"
+                  [class.is-invalid]="isFieldInvalid('stock')"
+                  id="stock"
+                  formControlName="stock"
+                  min="0"
+                  placeholder="0"
+                />
+                <div class="invalid-feedback" *ngIf="getFieldError('stock')">
+                  {{ getFieldError('stock') }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Botones -->
+            <div class="d-flex gap-2 justify-content-end">
+              <button type="button" class="btn btn-secondary" (click)="onCancel()">
+                Cancelar
+              </button>
+              <button type="submit" class="btn btn-primary" [disabled]="productForm.invalid">
+                {{ isEditMode ? 'Actualizar' : 'Crear' }} Producto
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

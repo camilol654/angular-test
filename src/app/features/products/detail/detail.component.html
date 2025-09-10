@@ -1,2 +1,138 @@
-<h3>Detalle del producto {{ id }}</h3>
-<a routerLink="/products">Volver</a>
+<div class="container mt-4" *ngIf="product">
+  <!-- Header con navegación -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a routerLink="/products">Productos</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">
+            {{ product.name }}
+          </li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Información del producto -->
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h3 class="mb-0">{{ product.name }}</h3>
+          <div class="btn-group" role="group">
+            <a [routerLink]="['/products/edit', product.id]" class="btn btn-warning btn-sm">
+              <i class="fas fa-edit"></i> Editar
+            </a>
+            <button type="button" class="btn btn-danger btn-sm" (click)="onDeleteProduct()">
+              <i class="fas fa-trash"></i> Eliminar
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <h5>Información General</h5>
+              <table class="table table-borderless">
+                <tr>
+                  <td><strong>ID:</strong></td>
+                  <td><span class="badge bg-secondary">{{ product.id }}</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Categoría:</strong></td>
+                  <td><span class="badge bg-primary">{{ product.category }}</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Precio:</strong></td>
+                  <td><span class="h5 text-success">{{ formatPrice(product.price) }}</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Stock:</strong></td>
+                  <td>
+                    <span [class]="getStockClass(product.stock)">
+                      {{ product.stock }} unidades
+                    </span>
+                    <small class="ms-2 text-muted">({{ getStockStatus(product.stock) }})</small>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="col-md-6">
+              <h5>Fechas</h5>
+              <table class="table table-borderless">
+                <tr>
+                  <td><strong>Creado:</strong></td>
+                  <td><small class="text-muted">{{ formatDate(product.createdDate) }}</small></td>
+                </tr>
+                <tr>
+                  <td><strong>Actualizado:</strong></td>
+                  <td><small class="text-muted">{{ formatDate(product.updatedDate) }}</small></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          
+          <hr>
+          
+          <h5>Descripción</h5>
+          <p class="text-muted">{{ product.description }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel lateral con acciones -->
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Acciones</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            <a [routerLink]="['/products/edit', product.id]" class="btn btn-warning">
+              <i class="fas fa-edit"></i> Editar Producto
+            </a>
+            <button type="button" class="btn btn-danger" (click)="onDeleteProduct()">
+              <i class="fas fa-trash"></i> Eliminar Producto
+            </button>
+            <a routerLink="/products" class="btn btn-secondary">
+              <i class="fas fa-arrow-left"></i> Volver a la Lista
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Información adicional -->
+      <div class="card mt-3">
+        <div class="card-header">
+          <h6 class="mb-0">Información del Sistema</h6>
+        </div>
+        <div class="card-body">
+          <small class="text-muted">
+            <strong>ID del Producto:</strong> {{ product.id }}<br>
+            <strong>Última modificación:</strong><br>
+            {{ formatDate(product.updatedDate) }}
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mensaje si no se encuentra el producto -->
+<div class="container mt-4" *ngIf="!product">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card text-center">
+        <div class="card-body">
+          <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+          <h4>Producto no encontrado</h4>
+          <p class="text-muted">El producto que buscas no existe o ha sido eliminado.</p>
+          <a routerLink="/products" class="btn btn-primary">
+            <i class="fas fa-arrow-left"></i> Volver a la Lista
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
