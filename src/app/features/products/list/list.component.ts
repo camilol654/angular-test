@@ -17,15 +17,34 @@ export class ListComponent implements OnInit, OnDestroy {
   products: Product[] = [];
   filteredProducts: Product[] = [];
   searchQuery: string = '';
+  loading = false;
+  error: string | null = null;
   private subscription: Subscription = new Subscription();
 
   constructor(private productService: ProcutsService) {}
 
   ngOnInit(): void {
-    this.subscription = this.productService.getProducts().subscribe(products => {
-      this.products = products;
-      this.filteredProducts = products;
-    });
+    // Suscribirse a los productos
+    this.subscription.add(
+      this.productService.getProducts().subscribe(products => {
+        this.products = products;
+        this.filteredProducts = products;
+      })
+    );
+
+    // Suscribirse al estado de carga
+    this.subscription.add(
+      this.productService.loading$.subscribe(loading => {
+        this.loading = loading;
+      })
+    );
+
+    // Suscribirse a los errores
+    this.subscription.add(
+      this.productService.error$.subscribe(error => {
+        this.error = error;
+      })
+    );
   }
 
   ngOnDestroy(): void {
@@ -47,14 +66,23 @@ export class ListComponent implements OnInit, OnDestroy {
 
   onDeleteProduct(id: number): void {
     if (confirm('¿Está seguro de que desea eliminar este producto?')) {
-      const success = this.productService.deleteProduct(id);
-      if (success) {
-        alert('Producto eliminado exitosamente');
-        // La lista se actualizará automáticamente gracias al BehaviorSubject
-      } else {
-        alert('Error al eliminar el producto');
-      }
+      this.productService.deleteProduct(id).subscribe({
+        next: () => {
+          alert('Producto eliminado exitosamente');
+        },
+        error: (error) => {
+          alert(`Error al eliminar el producto: ${error.message}`);
+        }
+      });
     }
+  }
+
+  onRefresh(): void {
+    this.productService.refreshProducts();
+  }
+
+  onClearError(): void {
+    this.productService.clearError();
   }
 
   formatPrice(price: number): string {

@@ -16,6 +16,8 @@ export class FormComponent implements OnInit {
   productForm: FormGroup;
   isEditMode = false;
   productId: number | null = null;
+  loading = false;
+  error: string | null = null;
   categories = ['Electrónicos', 'Muebles', 'Ropa', 'Hogar', 'Deportes', 'Libros', 'Otros'];
 
   constructor(
@@ -48,37 +50,61 @@ export class FormComponent implements OnInit {
 
   private loadProduct(): void {
     if (this.productId) {
-      const product = this.productService.getProductById(this.productId);
-      if (product) {
-        this.productForm.patchValue({
-          name: product.name,
-          description: product.description,
-          price: product.price,
-          stock: product.stock,
-          category: product.category
-        });
-      }
+      this.loading = true;
+      this.error = null;
+      
+      this.productService.getProductById(this.productId).subscribe({
+        next: (product) => {
+          this.productForm.patchValue({
+            name: product.name,
+            description: product.description,
+            price: product.price,
+            stock: product.stock,
+            category: product.category
+          });
+          this.loading = false;
+        },
+        error: (error) => {
+          this.error = error.message;
+          this.loading = false;
+          console.error('Error cargando producto:', error);
+        }
+      });
     }
   }
 
   onSubmit(): void {
-    if (this.productForm.valid) {
+    if (this.productForm.valid && !this.loading) {
+      this.loading = true;
+      this.error = null;
       const formValue = this.productForm.value;
       
       if (this.isEditMode && this.productId) {
         // Actualizar producto existente
-        const updatedProduct = this.productService.updateProduct(this.productId, formValue);
-        if (updatedProduct) {
-          alert('Producto actualizado exitosamente');
-          this.router.navigate(['/products']);
-        } else {
-          alert('Error al actualizar el producto');
-        }
+        this.productService.updateProduct(this.productId, formValue).subscribe({
+          next: () => {
+            alert('Producto actualizado exitosamente');
+            this.router.navigate(['/products']);
+          },
+          error: (error) => {
+            this.error = error.message;
+            this.loading = false;
+            alert(`Error al actualizar el producto: ${error.message}`);
+          }
+        });
       } else {
         // Crear nuevo producto
-        const newProduct = this.productService.createProduct(formValue);
-        alert('Producto creado exitosamente');
-        this.router.navigate(['/products']);
+        this.productService.createProduct(formValue).subscribe({
+          next: () => {
+            alert('Producto creado exitosamente');
+            this.router.navigate(['/products']);
+          },
+          error: (error) => {
+            this.error = error.message;
+            this.loading = false;
+            alert(`Error al crear el producto: ${error.message}`);
+          }
+        });
       }
     } else {
       this.markFormGroupTouched();
@@ -127,5 +153,9 @@ export class FormComponent implements OnInit {
   isFieldInvalid(fieldName: string): boolean {
     const field = this.productForm.get(fieldName);
     return !!(field?.invalid && field?.touched);
+  }
+
+  onClearError(): void {
+    this.error = null;
   }
 }

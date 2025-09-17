@@ -18,6 +18,11 @@ export const PRODUCTS_ROUTES: Routes = [
       import('./form/form.component').then(c => c.FormComponent),
   },
   {
+    path: 'test-connection',
+    loadComponent: () =>
+      import('./connection-test/connection-test.component').then(c => c.ConnectionTestComponent),
+  },
+  {
     path: ':id',
     loadComponent: () =>
       import('./detail/detail.component').then(c => c.DetailComponent),

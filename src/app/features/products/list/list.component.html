@@ -6,9 +6,14 @@
       <p class="text-muted">Administra tu catálogo de productos</p>
     </div>
     <div class="col-md-6 text-end">
-      <a routerLink="/products/create" class="btn btn-primary">
-        <i class="fas fa-plus"></i> Nuevo Producto
-      </a>
+      <div class="btn-group" role="group">
+        <a routerLink="/products/test-connection" class="btn btn-outline-info">
+          <i class="fas fa-wifi"></i> Probar Conexión
+        </a>
+        <a routerLink="/products/create" class="btn btn-primary">
+          <i class="fas fa-plus"></i> Nuevo Producto
+        </a>
+      </div>
     </div>
   </div>
 
@@ -22,19 +27,49 @@
           placeholder="Buscar productos por nombre, categoría o descripción..."
           [(ngModel)]="searchQuery"
           (keyup.enter)="onSearch()"
+          [disabled]="loading"
         />
-        <button class="btn btn-outline-secondary" type="button" (click)="onSearch()">
+        <button class="btn btn-outline-secondary" type="button" (click)="onSearch()" [disabled]="loading">
           <i class="fas fa-search"></i> Buscar
         </button>
-        <button class="btn btn-outline-secondary" type="button" (click)="onClearSearch()">
+        <button class="btn btn-outline-secondary" type="button" (click)="onClearSearch()" [disabled]="loading">
           <i class="fas fa-times"></i> Limpiar
         </button>
       </div>
     </div>
     <div class="col-md-6 text-end">
-      <span class="badge bg-info">
-        {{ filteredProducts.length }} producto(s) encontrado(s)
-      </span>
+      <div class="d-flex align-items-center justify-content-end gap-2">
+        <button class="btn btn-outline-primary btn-sm" (click)="onRefresh()" [disabled]="loading">
+          <i class="fas fa-sync-alt" [class.fa-spin]="loading"></i> 
+          {{ loading ? 'Cargando...' : 'Actualizar' }}
+        </button>
+        <span class="badge bg-info">
+          {{ filteredProducts.length }} producto(s) encontrado(s)
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div class="row mb-3" *ngIf="error">
+    <div class="col-12">
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle"></i>
+        <strong>Error:</strong> {{ error }}
+        <button type="button" class="btn-close" (click)="onClearError()" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Indicador de carga -->
+  <div class="row mb-3" *ngIf="loading && products.length === 0">
+    <div class="col-12">
+      <div class="text-center py-4">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="mt-2 text-muted">Cargando productos...</p>
+      </div>
     </div>
   </div>
 

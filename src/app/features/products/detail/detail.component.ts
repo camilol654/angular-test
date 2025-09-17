@@ -14,6 +14,8 @@ import { Product } from '../../../interfaces/product.interface';
 export class DetailComponent implements OnInit {
   product: Product | undefined;
   id: number = 0;
+  loading = false;
+  error: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -25,25 +27,48 @@ export class DetailComponent implements OnInit {
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
       this.id = +idParam;
-      this.product = this.productService.getProductById(this.id);
-      
-      if (!this.product) {
-        alert('Producto no encontrado');
-        this.router.navigate(['/products']);
-      }
+      this.loadProduct();
     }
+  }
+
+  private loadProduct(): void {
+    this.loading = true;
+    this.error = null;
+    
+    this.productService.getProductById(this.id).subscribe({
+      next: (product) => {
+        this.product = product;
+        this.loading = false;
+      },
+      error: (error) => {
+        this.error = error.message;
+        this.loading = false;
+        console.error('Error cargando producto:', error);
+      }
+    });
   }
 
   onDeleteProduct(): void {
     if (this.product && confirm('¿Está seguro de que desea eliminar este producto?')) {
-      const success = this.productService.deleteProduct(this.product.id);
-      if (success) {
-        alert('Producto eliminado exitosamente');
-        this.router.navigate(['/products']);
-      } else {
-        alert('Error al eliminar el producto');
-      }
+      this.loading = true;
+      this.error = null;
+      
+      this.productService.deleteProduct(this.product.id).subscribe({
+        next: () => {
+          alert('Producto eliminado exitosamente');
+          this.router.navigate(['/products']);
+        },
+        error: (error) => {
+          this.error = error.message;
+          this.loading = false;
+          alert(`Error al eliminar el producto: ${error.message}`);
+        }
+      });
     }
+  }
+
+  onClearError(): void {
+    this.error = null;
   }
 
   formatPrice(price: number): string {
