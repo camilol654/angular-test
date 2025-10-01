@@ -3,6 +3,8 @@ import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Product } from '../interfaces/product.interface';
+import { User } from '../interfaces/user.interface';
+import { Order } from '../interfaces/order.interface';
 import { API_CONFIG } from './api.config';
 
 @Injectable({
@@ -84,6 +86,162 @@ export class ApiService {
   // DELETE /api/Products/{id}
   deleteProduct(id: number): Observable<boolean> {
     return this.http.delete(`${this.baseUrl}/Products/${id}`, this.httpOptions)
+      .pipe(
+        map(() => true),
+        catchError(this.handleError)
+      );
+  }
+
+  // ========== USUARIOS ENDPOINTS ==========
+  
+  // GET /api/Users
+  getUsers(): Observable<User[]> {
+    return this.http.get<User[]>(`${this.baseUrl}/Users`, this.httpOptions)
+      .pipe(
+        map(users => users.map(user => ({
+          ...user,
+          fechaRegistro: new Date(user.fechaRegistro),
+          fechaActualizacion: new Date(user.fechaActualizacion)
+        }))),
+        catchError(this.handleError)
+      );
+  }
+
+  // GET /api/Users/{id}
+  getUserById(id: number): Observable<User> {
+    return this.http.get<User>(`${this.baseUrl}/Users/${id}`, this.httpOptions)
+      .pipe(
+        map(user => ({
+          ...user,
+          fechaRegistro: new Date(user.fechaRegistro),
+          fechaActualizacion: new Date(user.fechaActualizacion)
+        })),
+        catchError(this.handleError)
+      );
+  }
+
+  // POST /api/Users
+  createUser(user: Omit<User, 'id' | 'fechaRegistro' | 'fechaActualizacion'>): Observable<User> {
+    const userToSend = {
+      ...user,
+      id: 0,
+      fechaRegistro: new Date().toISOString(),
+      fechaActualizacion: new Date().toISOString()
+    };
+
+    return this.http.post<User>(`${this.baseUrl}/Users`, userToSend, this.httpOptions)
+      .pipe(
+        map(user => ({
+          ...user,
+          fechaRegistro: new Date(user.fechaRegistro),
+          fechaActualizacion: new Date(user.fechaActualizacion)
+        })),
+        catchError(this.handleError)
+      );
+  }
+
+  // PUT /api/Users/{id}
+  updateUser(id: number, user: Partial<Omit<User, 'id' | 'fechaRegistro'>>): Observable<User> {
+    const userToSend = {
+      ...user,
+      id: id,
+      fechaActualizacion: new Date().toISOString()
+    };
+
+    return this.http.put<User>(`${this.baseUrl}/Users/${id}`, userToSend, this.httpOptions)
+      .pipe(
+        map(user => ({
+          ...user,
+          fechaRegistro: new Date(user.fechaRegistro),
+          fechaActualizacion: new Date(user.fechaActualizacion)
+        })),
+        catchError(this.handleError)
+      );
+  }
+
+  // DELETE /api/Users/{id}
+  deleteUser(id: number): Observable<boolean> {
+    return this.http.delete(`${this.baseUrl}/Users/${id}`, this.httpOptions)
+      .pipe(
+        map(() => true),
+        catchError(this.handleError)
+      );
+  }
+
+  // ========== PEDIDOS ENDPOINTS ==========
+  
+  // GET /api/Orders
+  getOrders(): Observable<Order[]> {
+    return this.http.get<Order[]>(`${this.baseUrl}/Orders`, this.httpOptions)
+      .pipe(
+        map(orders => orders.map(order => ({
+          ...order,
+          fechaPedido: new Date(order.fechaPedido),
+          fechaCreacion: new Date(order.fechaCreacion),
+          fechaActualizacion: new Date(order.fechaActualizacion)
+        }))),
+        catchError(this.handleError)
+      );
+  }
+
+  // GET /api/Orders/{id}
+  getOrderById(id: number): Observable<Order> {
+    return this.http.get<Order>(`${this.baseUrl}/Orders/${id}`, this.httpOptions)
+      .pipe(
+        map(order => ({
+          ...order,
+          fechaPedido: new Date(order.fechaPedido),
+          fechaCreacion: new Date(order.fechaCreacion),
+          fechaActualizacion: new Date(order.fechaActualizacion)
+        })),
+        catchError(this.handleError)
+      );
+  }
+
+  // POST /api/Orders
+  createOrder(order: Omit<Order, 'id' | 'fechaCreacion' | 'fechaActualizacion'>): Observable<Order> {
+    const orderToSend = {
+      ...order,
+      id: 0,
+      fechaCreacion: new Date().toISOString(),
+      fechaActualizacion: new Date().toISOString()
+    };
+
+    return this.http.post<Order>(`${this.baseUrl}/Orders`, orderToSend, this.httpOptions)
+      .pipe(
+        map(order => ({
+          ...order,
+          fechaPedido: new Date(order.fechaPedido),
+          fechaCreacion: new Date(order.fechaCreacion),
+          fechaActualizacion: new Date(order.fechaActualizacion)
+        })),
+        catchError(this.handleError)
+      );
+  }
+
+  // PUT /api/Orders/{id}
+  updateOrder(id: number, order: Partial<Omit<Order, 'id' | 'fechaCreacion'>>): Observable<Order> {
+    const orderToSend = {
+      ...order,
+      id: id,
+      fechaActualizacion: new Date().toISOString()
+    };
+
+    return this.http.put<Order>(`${this.baseUrl}/Orders/${id}`, orderToSend, this.httpOptions)
+      .pipe(
+        map(order => ({
+          ...order,
+          fechaPedido: new Date(order.fechaPedido),
+          fechaCreacion: new Date(order.fechaCreacion),
+          fechaActualizacion: new Date(order.fechaActualizacion)
+        })),
+        catchError(this.handleError)
+      );
+  }
+
+  // DELETE /api/Orders/{id}
+  deleteOrder(id: number): Observable<boolean> {
+    return this.http.delete(`${this.baseUrl}/Orders/${id}`, this.httpOptions)
       .pipe(
         map(() => true),
         catchError(this.handleError)

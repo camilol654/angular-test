@@ -49,4 +49,46 @@ export class ApiTestService {
       })
     );
   }
+
+  // Probar endpoint de usuarios
+  testUsersEndpoint(): Observable<{ success: boolean; count: number; message: string }> {
+    return this.http.get<any[]>(`${API_CONFIG.baseUrl}/Users`, {
+      headers: API_CONFIG.headers
+    }).pipe(
+      map((users) => ({
+        success: true,
+        count: users.length,
+        message: `Se encontraron ${users.length} usuarios`
+      })),
+      catchError(error => {
+        console.error('Error en endpoint de usuarios:', error);
+        return of({
+          success: false,
+          count: 0,
+          message: `Error en endpoint: ${error.message || 'Error desconocido'}`
+        });
+      })
+    );
+  }
+
+  // Probar endpoint de pedidos
+  testOrdersEndpoint(): Observable<{ success: boolean; count: number; message: string }> {
+    return this.http.get<any[]>(`${API_CONFIG.baseUrl}/Orders`, {
+      headers: API_CONFIG.headers
+    }).pipe(
+      map((orders) => ({
+        success: true,
+        count: orders.length,
+        message: `Se encontraron ${orders.length} pedidos`
+      })),
+      catchError(error => {
+        console.error('Error en endpoint de pedidos:', error);
+        return of({
+          success: false,
+          count: 0,
+          message: `Error en endpoint: ${error.message || 'Error desconocido'}`
+        });
+      })
+    );
+  }
 }

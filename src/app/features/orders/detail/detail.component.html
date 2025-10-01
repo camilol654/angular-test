@@ -1,0 +1,210 @@
+<div class="container mt-4">
+  <!-- Header con navegación -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a routerLink="/orders">Pedidos</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page" *ngIf="order">
+            Pedido #{{ order.id }}
+          </li>
+          <li class="breadcrumb-item active" aria-current="page" *ngIf="!order && !loading">
+            Pedido no encontrado
+          </li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div class="row mb-3" *ngIf="error">
+    <div class="col-12">
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle"></i>
+        <strong>Error:</strong> {{ error }}
+        <button type="button" class="btn-close" (click)="onClearError()" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Indicador de carga -->
+  <div class="row mb-3" *ngIf="loading">
+    <div class="col-12">
+      <div class="text-center py-4">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="mt-2 text-muted">Cargando pedido...</p>
+      </div>
+    </div>
+  </div>
+
+<div class="container mt-4" *ngIf="order && !loading">
+  <!-- Información del pedido -->
+  <div class="row">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h3 class="mb-0">Pedido #{{ order.id }}</h3>
+          <div class="btn-group" role="group">
+            <a [routerLink]="['/orders/edit', order.id]" class="btn btn-warning btn-sm">
+              <i class="fas fa-edit"></i> Editar
+            </a>
+            <button type="button" class="btn btn-danger btn-sm" (click)="onDeleteOrder()" [disabled]="loading">
+              <i class="fas fa-trash"></i> Eliminar
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <h5>Información del Pedido</h5>
+              <table class="table table-borderless">
+                <tr>
+                  <td><strong>ID:</strong></td>
+                  <td><span class="badge bg-secondary">{{ order.id }}</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Fecha:</strong></td>
+                  <td>{{ formatDate(order.fechaPedido) }}</td>
+                </tr>
+                <tr>
+                  <td><strong>Estado:</strong></td>
+                  <td><span [class]="getStatusClass(order.estado)">{{ order.estado }}</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Total:</strong></td>
+                  <td><span class="h5 text-success">{{ formatPrice(order.totalGeneral) }}</span></td>
+                </tr>
+              </table>
+            </div>
+            <div class="col-md-6">
+              <h5>Información del Usuario</h5>
+              <table class="table table-borderless">
+                <tr>
+                  <td><strong>Nombre:</strong></td>
+                  <td>{{ order.usuario.nombreCompleto }}</td>
+                </tr>
+                <tr>
+                  <td><strong>Email:</strong></td>
+                  <td>
+                    <a href="mailto:{{ order.usuario.email }}" class="text-decoration-none">
+                      {{ order.usuario.email }}
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Teléfono:</strong></td>
+                  <td>
+                    <a href="tel:{{ order.usuario.telefono }}" class="text-decoration-none">
+                      {{ order.usuario.telefono }}
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          
+          <hr>
+          
+          <!-- Productos del pedido -->
+          <h5>Productos del Pedido</h5>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Producto</th>
+                  <th>Cantidad</th>
+                  <th>Precio Unitario</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of order.items">
+                  <td>
+                    <strong>{{ item.producto.name }}</strong>
+                    <br>
+                    <small class="text-muted">{{ item.producto.description }}</small>
+                  </td>
+                  <td>
+                    <span class="badge bg-primary">{{ item.cantidad }}</span>
+                  </td>
+                  <td>{{ formatPrice(item.precioUnitario) }}</td>
+                  <td>
+                    <strong class="text-success">{{ formatPrice(item.precioTotal) }}</strong>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr class="table-dark">
+                  <th colspan="3">Total General:</th>
+                  <th class="text-success">{{ formatPrice(order.totalGeneral) }}</th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel lateral con acciones -->
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Acciones</h5>
+        </div>
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            <a [routerLink]="['/orders/edit', order.id]" class="btn btn-warning">
+              <i class="fas fa-edit"></i> Editar Pedido
+            </a>
+            <button type="button" class="btn btn-danger" (click)="onDeleteOrder()" [disabled]="loading">
+              <i class="fas fa-trash"></i> Eliminar Pedido
+            </button>
+            <a routerLink="/orders" class="btn btn-secondary">
+              <i class="fas fa-arrow-left"></i> Volver a la Lista
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Información adicional -->
+      <div class="card mt-3">
+        <div class="card-header">
+          <h6 class="mb-0">Información del Sistema</h6>
+        </div>
+        <div class="card-body">
+          <small class="text-muted">
+            <strong>ID del Pedido:</strong> {{ order.id }}<br>
+            <strong>Fecha de creación:</strong><br>
+            {{ formatDate(order.fechaCreacion) }}<br>
+            <strong>Última modificación:</strong><br>
+            {{ formatDate(order.fechaActualizacion) }}
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mensaje si no se encuentra el pedido -->
+<div class="container mt-4" *ngIf="!order && !loading">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card text-center">
+        <div class="card-body">
+          <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+          <h4>Pedido no encontrado</h4>
+          <p class="text-muted">El pedido que buscas no existe o ha sido eliminado.</p>
+          <a routerLink="/orders" class="btn btn-primary">
+            <i class="fas fa-arrow-left"></i> Volver a la Lista
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+

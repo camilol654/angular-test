@@ -1,0 +1,127 @@
+.layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.main-content {
+  flex: 1;
+  margin-left: 250px;
+  transition: margin-left 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.top-navbar {
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #dee2e6;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+}
+
+.sidebar-toggle-btn {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+  transition: all 0.3s ease;
+}
+
+.sidebar-toggle-btn:hover {
+  background-color: #f8f9fa;
+  color: #495057;
+}
+
+.navbar-title h4 {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.navbar-title small {
+  color: #6c757d;
+  font-size: 0.8rem;
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.system-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #f8f9fa;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+.system-status i {
+  font-size: 0.75rem;
+}
+
+.page-content {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+  }
+  
+  .navbar-content {
+    padding: 1rem;
+  }
+  
+  .navbar-title {
+    flex: 1;
+    margin-left: 1rem;
+  }
+  
+  .page-content {
+    padding: 1rem;
+  }
+}
+
+/* Animation for sidebar toggle */
+.main-content.sidebar-collapsed {
+  margin-left: 60px;
+}
+
+/* Custom scrollbar for page content */
+.page-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.page-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.page-content::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.page-content::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+

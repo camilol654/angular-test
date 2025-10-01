@@ -18,11 +18,19 @@ import { ApiTestService } from '../../../services/api-test.service';
               <div class="d-grid gap-2 mb-3">
                 <button class="btn btn-primary" (click)="testConnection()" [disabled]="testing">
                   <span *ngIf="testing" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                  {{ testing ? 'Probando...' : 'Probar Conexión' }}
+                  {{ testing ? 'Probando...' : 'Probar Conexión General' }}
                 </button>
                 <button class="btn btn-outline-primary" (click)="testProductsEndpoint()" [disabled]="testing">
                   <span *ngIf="testing" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                   {{ testing ? 'Probando...' : 'Probar Endpoint de Productos' }}
+                </button>
+                <button class="btn btn-outline-success" (click)="testUsersEndpoint()" [disabled]="testing">
+                  <span *ngIf="testing" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  {{ testing ? 'Probando...' : 'Probar Endpoint de Usuarios' }}
+                </button>
+                <button class="btn btn-outline-warning" (click)="testOrdersEndpoint()" [disabled]="testing">
+                  <span *ngIf="testing" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  {{ testing ? 'Probando...' : 'Probar Endpoint de Pedidos' }}
                 </button>
               </div>
 
@@ -92,6 +100,46 @@ export class ConnectionTestComponent implements OnInit {
     this.result = null;
 
     this.apiTestService.testProductsEndpoint().subscribe({
+      next: (result) => {
+        this.result = result;
+        this.testing = false;
+      },
+      error: (error) => {
+        this.result = {
+          success: false,
+          count: 0,
+          message: `Error inesperado: ${error.message}`
+        };
+        this.testing = false;
+      }
+    });
+  }
+
+  testUsersEndpoint(): void {
+    this.testing = true;
+    this.result = null;
+
+    this.apiTestService.testUsersEndpoint().subscribe({
+      next: (result) => {
+        this.result = result;
+        this.testing = false;
+      },
+      error: (error) => {
+        this.result = {
+          success: false,
+          count: 0,
+          message: `Error inesperado: ${error.message}`
+        };
+        this.testing = false;
+      }
+    });
+  }
+
+  testOrdersEndpoint(): void {
+    this.testing = true;
+    this.result = null;
+
+    this.apiTestService.testOrdersEndpoint().subscribe({
       next: (result) => {
         this.result = result;
         this.testing = false;

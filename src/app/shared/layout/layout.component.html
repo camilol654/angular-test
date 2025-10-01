@@ -1,0 +1,37 @@
+<div class="layout">
+  <!-- Sidebar -->
+  <app-sidebar></app-sidebar>
+  
+  <!-- Main content area -->
+  <div class="main-content">
+    <!-- Top navigation bar -->
+    <nav class="top-navbar">
+      <div class="navbar-content">
+        <button class="sidebar-toggle-btn" (click)="toggleSidebar()">
+          <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="navbar-title">
+          <h4 class="mb-0">Sistema de Gestión</h4>
+          <small class="text-muted">Panel de Administración</small>
+        </div>
+        
+        <div class="navbar-actions">
+          <div class="system-status">
+            <i class="fas fa-circle text-success"></i>
+            <span>Sistema Activo</span>
+          </div>
+        </div>
+      </div>
+    </nav>
+    
+    <!-- Page content -->
+    <main class="page-content">
+      <!-- Breadcrumbs -->
+      <app-breadcrumbs></app-breadcrumbs>
+      
+      <!-- Router outlet -->
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

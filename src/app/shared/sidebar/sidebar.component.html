@@ -1,0 +1,101 @@
+<div class="sidebar" [class.collapsed]="isCollapsed">
+  <!-- Header del sidebar -->
+  <div class="sidebar-header">
+    <div class="sidebar-brand" *ngIf="!isCollapsed">
+      <i class="fas fa-store"></i>
+      <span>Sistema de Gestión</span>
+    </div>
+    <div class="sidebar-brand collapsed" *ngIf="isCollapsed">
+      <i class="fas fa-store"></i>
+    </div>
+    <button class="sidebar-toggle" (click)="toggleSidebar()">
+      <i class="fas" [class.fa-chevron-left]="!isCollapsed" [class.fa-chevron-right]="isCollapsed"></i>
+    </button>
+  </div>
+
+  <!-- Acciones rápidas -->
+  <app-quick-actions *ngIf="!isCollapsed"></app-quick-actions>
+
+  <!-- Navegación principal -->
+  <nav class="sidebar-nav">
+    <ul class="nav-list">
+      <!-- Inicio -->
+      <li class="nav-item">
+        <a routerLink="/home" routerLinkActive="active" class="nav-link">
+          <i class="fas fa-home"></i>
+          <span *ngIf="!isCollapsed">Inicio</span>
+        </a>
+      </li>
+
+      <!-- Productos -->
+      <li class="nav-item" [class.active]="isActiveRoute('/products')">
+        <div class="nav-link" (click)="toggleSubmenu('products')">
+          <i class="fas fa-box"></i>
+          <span *ngIf="!isCollapsed">Productos</span>
+          <i class="fas fa-chevron-down submenu-icon" *ngIf="!isCollapsed" [class.rotated]="submenuOpen === 'products'"></i>
+        </div>
+        <ul class="submenu" *ngIf="!isCollapsed && submenuOpen === 'products'">
+          <li><a routerLink="/products" class="submenu-link">
+            <i class="fas fa-list"></i>Lista de Productos
+          </a></li>
+          <li><a routerLink="/products/create" class="submenu-link">
+            <i class="fas fa-plus"></i>Crear Producto
+          </a></li>
+          <li><a routerLink="/products/test-connection" class="submenu-link">
+            <i class="fas fa-wifi"></i>Probar Conexión
+          </a></li>
+        </ul>
+      </li>
+
+      <!-- Usuarios -->
+      <li class="nav-item" [class.active]="isActiveRoute('/users')">
+        <div class="nav-link" (click)="toggleSubmenu('users')">
+          <i class="fas fa-users"></i>
+          <span *ngIf="!isCollapsed">Usuarios</span>
+          <i class="fas fa-chevron-down submenu-icon" *ngIf="!isCollapsed" [class.rotated]="submenuOpen === 'users'"></i>
+        </div>
+        <ul class="submenu" *ngIf="!isCollapsed && submenuOpen === 'users'">
+          <li><a routerLink="/users" class="submenu-link">
+            <i class="fas fa-list"></i>Lista de Usuarios
+          </a></li>
+          <li><a routerLink="/users/create" class="submenu-link">
+            <i class="fas fa-user-plus"></i>Crear Usuario
+          </a></li>
+        </ul>
+      </li>
+
+      <!-- Pedidos -->
+      <li class="nav-item" [class.active]="isActiveRoute('/orders')">
+        <div class="nav-link" (click)="toggleSubmenu('orders')">
+          <i class="fas fa-shopping-cart"></i>
+          <span *ngIf="!isCollapsed">Pedidos</span>
+          <i class="fas fa-chevron-down submenu-icon" *ngIf="!isCollapsed" [class.rotated]="submenuOpen === 'orders'"></i>
+        </div>
+        <ul class="submenu" *ngIf="!isCollapsed && submenuOpen === 'orders'">
+          <li><a routerLink="/orders" class="submenu-link">
+            <i class="fas fa-list"></i>Lista de Pedidos
+          </a></li>
+          <li><a routerLink="/orders/create" class="submenu-link">
+            <i class="fas fa-plus"></i>Crear Pedido
+          </a></li>
+        </ul>
+      </li>
+
+      <!-- Administración -->
+      <li class="nav-item">
+        <a routerLink="/admin" routerLinkActive="active" class="nav-link">
+          <i class="fas fa-cog"></i>
+          <span *ngIf="!isCollapsed">Administración</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Footer del sidebar -->
+  <div class="sidebar-footer" *ngIf="!isCollapsed">
+    <div class="system-info">
+      <i class="fas fa-server"></i>
+      <span>Backend: localhost:7248</span>
+    </div>
+  </div>
+</div>

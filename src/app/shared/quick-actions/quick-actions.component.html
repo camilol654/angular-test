@@ -1,0 +1,21 @@
+<div class="quick-actions">
+  <h6 class="quick-actions-title">
+    <i class="fas fa-bolt"></i>
+    Acciones Rápidas
+  </h6>
+  
+  <div class="actions-grid">
+    <a 
+      *ngFor="let action of quickActions" 
+      [routerLink]="action.route"
+      class="quick-action-btn"
+      [class]="'btn-' + action.color"
+      [title]="action.description"
+    >
+      <i [class]="action.icon"></i>
+      <span>{{ action.label }}</span>
+    </a>
+  </div>
+</div>
+
+

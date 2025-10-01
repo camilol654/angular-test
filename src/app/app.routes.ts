@@ -18,6 +18,18 @@ export const routes: Routes = [
       import('./features/products/products.routes').then(m => m.PRODUCTS_ROUTES),
   },
 
+  {
+    path: 'users',
+    loadChildren: () =>
+      import('./features/users/users.routes').then(m => m.USERS_ROUTES),
+  },
+
+  {
+    path: 'orders',
+    loadChildren: () =>
+      import('./features/orders/orders.routes').then(m => m.ORDERS_ROUTES),
+  },
+
   // Lazy + guard (canMatch)
   {
     path: 'admin',

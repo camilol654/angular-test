@@ -1,0 +1,157 @@
+<div class="container-fluid mt-4">
+  <!-- Header con botón de crear -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <h2 class="mb-0">Gestión de Pedidos</h2>
+      <p class="text-muted">Administra los pedidos realizados por los usuarios</p>
+    </div>
+    <div class="col-md-6 text-end">
+      <a routerLink="/orders/create" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Nuevo Pedido
+      </a>
+    </div>
+  </div>
+
+  <!-- Barra de búsqueda -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="input-group">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Buscar pedidos por usuario o estado..."
+          [(ngModel)]="searchQuery"
+          (keyup.enter)="onSearch()"
+          [disabled]="loading"
+        />
+        <button class="btn btn-outline-secondary" type="button" (click)="onSearch()" [disabled]="loading">
+          <i class="fas fa-search"></i> Buscar
+        </button>
+        <button class="btn btn-outline-secondary" type="button" (click)="onClearSearch()" [disabled]="loading">
+          <i class="fas fa-times"></i> Limpiar
+        </button>
+      </div>
+    </div>
+    <div class="col-md-6 text-end">
+      <div class="d-flex align-items-center justify-content-end gap-2">
+        <button class="btn btn-outline-primary btn-sm" (click)="onRefresh()" [disabled]="loading">
+          <i class="fas fa-sync-alt" [class.fa-spin]="loading"></i> 
+          {{ loading ? 'Cargando...' : 'Actualizar' }}
+        </button>
+        <span class="badge bg-info">
+          {{ filteredOrders.length }} pedido(s) encontrado(s)
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div class="row mb-3" *ngIf="error">
+    <div class="col-12">
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-triangle"></i>
+        <strong>Error:</strong> {{ error }}
+        <button type="button" class="btn-close" (click)="onClearError()" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Indicador de carga -->
+  <div class="row mb-3" *ngIf="loading && orders.length === 0">
+    <div class="col-12">
+      <div class="text-center py-4">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+        <p class="mt-2 text-muted">Cargando pedidos...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla de pedidos -->
+  <div class="card">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-dark">
+            <tr>
+              <th>ID</th>
+              <th>Usuario</th>
+              <th>Fecha Pedido</th>
+              <th>Estado</th>
+              <th>Total</th>
+              <th>Productos</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            @if (filteredOrders.length === 0) {
+              <tr>
+                <td colspan="7" class="text-center py-4">
+                  <div class="text-muted">
+                    <i class="fas fa-shopping-cart fa-3x mb-3"></i>
+                    <p>No se encontraron pedidos</p>
+                    <a routerLink="/orders/create" class="btn btn-primary btn-sm">
+                      Crear primer pedido
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            } @else {
+              @for (order of filteredOrders; track order.id) {
+                <tr>
+                  <td>
+                    <span class="badge bg-secondary">{{ order.id }}</span>
+                  </td>
+                  <td>
+                    <div>
+                      <strong>{{ order.usuario.nombreCompleto }}</strong>
+                      <br>
+                      <small class="text-muted">{{ order.usuario.email }}</small>
+                    </div>
+                  </td>
+                  <td>
+                    <small class="text-muted">{{ formatDate(order.fechaPedido) }}</small>
+                  </td>
+                  <td>
+                    <span [class]="getStatusClass(order.estado)">
+                      {{ order.estado }}
+                    </span>
+                  </td>
+                  <td>
+                    <strong class="text-success">{{ formatPrice(order.totalGeneral) }}</strong>
+                  </td>
+                  <td>
+                    <span class="badge bg-primary">{{ order.items.length }} producto(s)</span>
+                  </td>
+                  <td>
+                    <div class="btn-group btn-group-sm" role="group">
+                      <a [routerLink]="['/orders', order.id]" 
+                         class="btn btn-outline-info btn-sm" 
+                         title="Ver detalles">
+                        <i class="fas fa-eye"></i>
+                      </a>
+                      <a [routerLink]="['/orders/edit', order.id]" 
+                         class="btn btn-outline-warning btn-sm" 
+                         title="Editar">
+                        <i class="fas fa-edit"></i>
+                      </a>
+                      <button type="button" 
+                              class="btn btn-outline-danger btn-sm" 
+                              (click)="onDeleteOrder(order.id)"
+                              title="Eliminar">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+

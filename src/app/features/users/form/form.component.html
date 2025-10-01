@@ -1,0 +1,92 @@
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="mb-0">
+            {{ isEditMode ? 'Editar Usuario' : 'Crear Nuevo Usuario' }}
+          </h3>
+        </div>
+        <div class="card-body">
+          <!-- Mensaje de error -->
+          <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="error">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>Error:</strong> {{ error }}
+            <button type="button" class="btn-close" (click)="onClearError()" aria-label="Close"></button>
+          </div>
+
+          <!-- Indicador de carga -->
+          <div class="text-center py-4" *ngIf="loading && isEditMode">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="mt-2 text-muted">Cargando usuario...</p>
+          </div>
+
+          <form [formGroup]="userForm" (ngSubmit)="onSubmit()" [class.d-none]="loading && isEditMode">
+            <!-- Nombre Completo -->
+            <div class="mb-3">
+              <label for="nombreCompleto" class="form-label">Nombre Completo *</label>
+              <input
+                type="text"
+                class="form-control"
+                [class.is-invalid]="isFieldInvalid('nombreCompleto')"
+                id="nombreCompleto"
+                formControlName="nombreCompleto"
+                placeholder="Ingrese el nombre completo del usuario"
+              />
+              <div class="invalid-feedback" *ngIf="getFieldError('nombreCompleto')">
+                {{ getFieldError('nombreCompleto') }}
+              </div>
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+              <label for="email" class="form-label">Email *</label>
+              <input
+                type="email"
+                class="form-control"
+                [class.is-invalid]="isFieldInvalid('email')"
+                id="email"
+                formControlName="email"
+                placeholder="usuario@ejemplo.com"
+              />
+              <div class="invalid-feedback" *ngIf="getFieldError('email')">
+                {{ getFieldError('email') }}
+              </div>
+            </div>
+
+            <!-- Teléfono -->
+            <div class="mb-3">
+              <label for="telefono" class="form-label">Teléfono *</label>
+              <input
+                type="tel"
+                class="form-control"
+                [class.is-invalid]="isFieldInvalid('telefono')"
+                id="telefono"
+                formControlName="telefono"
+                placeholder="+1 (555) 123-4567"
+              />
+              <div class="invalid-feedback" *ngIf="getFieldError('telefono')">
+                {{ getFieldError('telefono') }}
+              </div>
+            </div>
+
+            <!-- Botones -->
+            <div class="d-flex gap-2 justify-content-end">
+              <button type="button" class="btn btn-secondary" (click)="onCancel()" [disabled]="loading">
+                Cancelar
+              </button>
+              <button type="submit" class="btn btn-primary" [disabled]="userForm.invalid || loading">
+                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                {{ loading ? 'Procesando...' : (isEditMode ? 'Actualizar' : 'Crear') }} Usuario
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+

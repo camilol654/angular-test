@@ -1,0 +1,200 @@
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="mb-0">
+            {{ isEditMode ? 'Editar Pedido' : 'Crear Nuevo Pedido' }}
+          </h3>
+        </div>
+        <div class="card-body">
+          <!-- Mensaje de error -->
+          <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="error">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>Error:</strong> {{ error }}
+            <button type="button" class="btn-close" (click)="onClearError()" aria-label="Close"></button>
+          </div>
+
+          <!-- Indicador de carga -->
+          <div class="text-center py-4" *ngIf="loading && isEditMode">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Cargando...</span>
+            </div>
+            <p class="mt-2 text-muted">Cargando pedido...</p>
+          </div>
+
+          <form [formGroup]="orderForm" (ngSubmit)="onSubmit()" [class.d-none]="loading && isEditMode">
+            <!-- Información básica del pedido -->
+            <div class="row mb-4">
+              <div class="col-md-4">
+                <label for="fechaPedido" class="form-label">Fecha del Pedido *</label>
+                <input
+                  type="date"
+                  class="form-control"
+                  [class.is-invalid]="isFieldInvalid('fechaPedido')"
+                  id="fechaPedido"
+                  formControlName="fechaPedido"
+                />
+                <div class="invalid-feedback" *ngIf="getFieldError('fechaPedido')">
+                  {{ getFieldError('fechaPedido') }}
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <label for="usuarioId" class="form-label">Usuario *</label>
+                <select
+                  class="form-select"
+                  [class.is-invalid]="isFieldInvalid('usuarioId')"
+                  id="usuarioId"
+                  formControlName="usuarioId"
+                >
+                  <option value="">Seleccione un usuario</option>
+                  <option *ngFor="let user of users" [value]="user.id">
+                    {{ user.nombreCompleto }} ({{ user.email }})
+                  </option>
+                </select>
+                <div class="invalid-feedback" *ngIf="getFieldError('usuarioId')">
+                  {{ getFieldError('usuarioId') }}
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <label for="estado" class="form-label">Estado *</label>
+                <select
+                  class="form-select"
+                  [class.is-invalid]="isFieldInvalid('estado')"
+                  id="estado"
+                  formControlName="estado"
+                >
+                  <option *ngFor="let status of orderStatuses" [value]="status">
+                    {{ status }}
+                  </option>
+                </select>
+                <div class="invalid-feedback" *ngIf="getFieldError('estado')">
+                  {{ getFieldError('estado') }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Productos del pedido -->
+            <div class="mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5>Productos del Pedido</h5>
+                <button type="button" class="btn btn-outline-primary btn-sm" (click)="addItem()">
+                  <i class="fas fa-plus"></i> Agregar Producto
+                </button>
+              </div>
+
+              <div formArrayName="items">
+                <div *ngFor="let item of items.controls; let i = index" class="card mb-3">
+                  <div class="card-body">
+                    <div class="row align-items-end">
+                      <div class="col-md-4">
+                        <label [for]="'productoId_' + i" class="form-label">Producto *</label>
+                        <select
+                          class="form-select"
+                          [class.is-invalid]="isItemFieldInvalid(i, 'productoId')"
+                          [id]="'productoId_' + i"
+                          [formControlName]="i"
+                          (change)="onProductChange(i)"
+                        >
+                          <option value="">Seleccione un producto</option>
+                          <option *ngFor="let product of products" [value]="product.id">
+                            {{ product.name }} - {{ product.price | currency:'USD' }}
+                          </option>
+                        </select>
+                        <div class="invalid-feedback" *ngIf="getItemFieldError(i, 'productoId')">
+                          {{ getItemFieldError(i, 'productoId') }}
+                        </div>
+                      </div>
+
+                      <div class="col-md-2">
+                        <label [for]="'cantidad_' + i" class="form-label">Cantidad *</label>
+                        <input
+                          type="number"
+                          class="form-control"
+                          [class.is-invalid]="isItemFieldInvalid(i, 'cantidad')"
+                          [id]="'cantidad_' + i"
+                          formControlName="cantidad"
+                          min="1"
+                        />
+                        <div class="invalid-feedback" *ngIf="getItemFieldError(i, 'cantidad')">
+                          {{ getItemFieldError(i, 'cantidad') }}
+                        </div>
+                      </div>
+
+                      <div class="col-md-2">
+                        <label [for]="'precioUnitario_' + i" class="form-label">Precio Unitario *</label>
+                        <input
+                          type="number"
+                          class="form-control"
+                          [class.is-invalid]="isItemFieldInvalid(i, 'precioUnitario')"
+                          [id]="'precioUnitario_' + i"
+                          formControlName="precioUnitario"
+                          step="0.01"
+                          min="0.01"
+                        />
+                        <div class="invalid-feedback" *ngIf="getItemFieldError(i, 'precioUnitario')">
+                          {{ getItemFieldError(i, 'precioUnitario') }}
+                        </div>
+                      </div>
+
+                      <div class="col-md-2">
+                        <label class="form-label">Total</label>
+                        <div class="form-control-plaintext fw-bold text-success">
+                          {{ calculateItemTotal(i) | currency:'USD' }}
+                        </div>
+                      </div>
+
+                      <div class="col-md-2">
+                        <button type="button" class="btn btn-outline-danger btn-sm" (click)="removeItem(i)">
+                          <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div *ngIf="items.length === 0" class="text-center py-4 text-muted">
+                <i class="fas fa-shopping-cart fa-2x mb-2"></i>
+                <p>No hay productos agregados al pedido</p>
+                <button type="button" class="btn btn-primary btn-sm" (click)="addItem()">
+                  <i class="fas fa-plus"></i> Agregar Primer Producto
+                </button>
+              </div>
+            </div>
+
+            <!-- Total del pedido -->
+            <div class="row mb-4" *ngIf="items.length > 0">
+              <div class="col-md-6"></div>
+              <div class="col-md-6">
+                <div class="card bg-light">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <h5 class="mb-0">Total del Pedido:</h5>
+                      <h4 class="mb-0 text-success">{{ calculateOrderTotal() | currency:'USD' }}</h4>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Botones -->
+            <div class="d-flex gap-2 justify-content-end">
+              <button type="button" class="btn btn-secondary" (click)="onCancel()" [disabled]="loading">
+                Cancelar
+              </button>
+              <button type="submit" class="btn btn-primary" [disabled]="orderForm.invalid || items.length === 0 || loading">
+                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                {{ loading ? 'Procesando...' : (isEditMode ? 'Actualizar' : 'Crear') }} Pedido
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
