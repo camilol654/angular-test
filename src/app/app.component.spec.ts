@@ -1,10 +1,24 @@
 import { TestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
+    // Create mock ActivatedRoute for LayoutComponent
+    const mockActivatedRoute = {
+      snapshot: { 
+        paramMap: jasmine.createSpyObj('ParamMap', ['get'])
+      },
+      paramMap: of(jasmine.createSpyObj('ParamMap', ['get']))
+    };
+
     await TestBed.configureTestingModule({
-      imports: [AppComponent],
+      imports: [AppComponent, RouterTestingModule],
+      providers: [
+        { provide: ActivatedRoute, useValue: mockActivatedRoute }
+      ]
     }).compileComponents();
   });
 
@@ -23,7 +37,9 @@ describe('AppComponent', () => {
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
+    
+    // The app uses a layout component, so we just verify the component is rendered
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, myFirstApp');
+    expect(compiled.querySelector('app-layout')).toBeTruthy();
   });
 });
